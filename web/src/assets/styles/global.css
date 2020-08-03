@@ -46,6 +46,7 @@ input,
 button,
 textarea { /* 1rem === 10px | 1.6x0,60 = 9.6px*/
   font: 500 1.6rem Poppins;  /* 500 font-weight: 1.6rem font-size; */
+  color: var(--color-text-base);
 }
 
 .container {
