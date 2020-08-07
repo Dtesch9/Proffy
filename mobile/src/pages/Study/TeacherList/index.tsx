@@ -1,4 +1,5 @@
 import React, { useState, useCallback } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
 import { BorderlessButton } from 'react-native-gesture-handler';
 import { Feather } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-community/async-storage';
@@ -42,6 +43,10 @@ const TeacherList: React.FC = () => {
       }
     });
   }, []);
+
+  useFocusEffect(() => {
+    loadFavorites();
+  });
 
   const handleToggleFiltersVisible = useCallback(() => {
     setIsFiltersVisible(state => !state);
