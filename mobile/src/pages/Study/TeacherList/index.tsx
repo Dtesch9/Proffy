@@ -2,8 +2,10 @@ import React, { useState, useCallback } from 'react';
 import { BorderlessButton } from 'react-native-gesture-handler';
 import { Feather } from '@expo/vector-icons';
 
+import api from '../../../services/api';
+
 import PageHeader from '../../../components/PageHeader';
-import TeacherItem from '../../../components/TeacherItem';
+import TeacherItem, { Teacher } from '../../../components/TeacherItem';
 
 import {
   Container,
@@ -19,10 +21,28 @@ import {
 
 const TeacherList: React.FC = () => {
   const [isFiltersVisible, setIsFiltersVisible] = useState(false);
+  const [teachers, setTeachers] = useState([]);
+
+  const [subject, setSubject] = useState('');
+  const [weekDay, setWeekDay] = useState('');
+  const [time, setTime] = useState('');
 
   const handleToggleFiltersVisible = useCallback(() => {
     setIsFiltersVisible(state => !state);
   }, []);
+
+  const handleFiltersSubmit = useCallback(async () => {
+    const response = await api.get('/classes', {
+      params: {
+        subject,
+        week_day: weekDay,
+        time,
+      },
+    });
+
+    setIsFiltersVisible(false);
+    setTeachers(response.data);
+  }, [subject, weekDay, time]);
 
   return (
     <Container>
@@ -37,21 +57,33 @@ const TeacherList: React.FC = () => {
         {isFiltersVisible && (
           <SearchForm>
             <Label>Matéria</Label>
-            <Input placeholder="Qual a matéria?" />
+            <Input
+              placeholder="Qual a matéria?"
+              value={subject}
+              onChangeText={setSubject}
+            />
 
             <InputGroup>
               <InputBlock>
                 <Label>Dia da semana</Label>
-                <Input placeholder="Qual o dia?" />
+                <Input
+                  value={weekDay}
+                  onChangeText={setWeekDay}
+                  placeholder="Qual o dia?"
+                />
               </InputBlock>
 
               <InputBlock>
                 <Label>Horário</Label>
-                <Input placeholder="Qual o horário?" />
+                <Input
+                  value={time}
+                  onChangeText={setTime}
+                  placeholder="Qual o horário?"
+                />
               </InputBlock>
             </InputGroup>
 
-            <SubmitButton>
+            <SubmitButton onPress={handleFiltersSubmit}>
               <SubmitButtonText>Filtrar</SubmitButtonText>
             </SubmitButton>
           </SearchForm>
@@ -59,14 +91,9 @@ const TeacherList: React.FC = () => {
       </PageHeader>
 
       <TeachersList>
-        <TeacherItem />
-        <TeacherItem />
-        <TeacherItem />
-        <TeacherItem />
-        <TeacherItem />
-        <TeacherItem />
-        <TeacherItem />
-        <TeacherItem />
+        {teachers.map((teacher: Teacher) => (
+          <TeacherItem key={teacher.id} teacher={teacher} />
+        ))}
       </TeachersList>
     </Container>
   );

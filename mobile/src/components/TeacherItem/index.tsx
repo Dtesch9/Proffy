@@ -20,29 +20,38 @@ import {
   ContactButtonText,
 } from './styles';
 
-const TeacherItem: React.FC = () => {
+export interface Teacher {
+  id: number;
+  name: string;
+  avatar: string;
+  bio: string;
+  cost: number;
+  subject: string;
+  whatsapp: string;
+}
+
+type TeacherItemProps = {
+  teacher: Teacher;
+};
+
+const TeacherItem: React.FC<TeacherItemProps> = ({ teacher }) => {
   return (
     <Container>
       <Profile>
-        <Avatar source={{ uri: 'https://github.com/Dtesch9.png' }} />
+        <Avatar source={{ uri: teacher.avatar }} />
 
         <ProfileInfo>
-          <Name>Douglas Tesch</Name>
-          <Subject>Matemática</Subject>
+          <Name>{teacher.name}</Name>
+          <Subject>{teacher.subject}</Subject>
         </ProfileInfo>
       </Profile>
 
-      <Bio>
-        Web Developer, Typescript full stack
-        {'\n'}
-        {'\n'}
-        Passionate for highest level of programming techniques.
-      </Bio>
+      <Bio>{teacher.bio}</Bio>
 
       <Footer>
         <Price>
           {`Preço/hora   `}
-          <PriceValue>R$ 20,00</PriceValue>
+          <PriceValue>{`R$ ${teacher.cost},00`}</PriceValue>
         </Price>
 
         <ButtonsContainer>
