@@ -2,6 +2,8 @@ import React, { useCallback, useState } from 'react';
 import { Linking } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 
+import api from '../../services/api';
+
 import {
   Container,
   Profile,
@@ -41,8 +43,12 @@ const TeacherItem: React.FC<TeacherItemProps> = ({ teacher, isFavorite }) => {
   const [isFavorited, setIsFavorited] = useState(isFavorite);
 
   const handleLinkToWhatsapp = useCallback(() => {
+    api.post('/connections', {
+      user_id: teacher.id,
+    });
+
     Linking.openURL(`whatsapp://send?phone=${teacher.whatsapp}`);
-  }, [teacher.whatsapp]);
+  }, [teacher]);
 
   const handleToggleFavorite = useCallback(async () => {
     const favorites = await AsyncStorage.getItem('favorites');
