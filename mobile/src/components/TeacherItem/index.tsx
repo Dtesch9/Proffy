@@ -1,4 +1,6 @@
-import React from 'react';
+import React, { useCallback, useState } from 'react';
+import { Linking } from 'react-native';
+import AsyncStorage from '@react-native-community/async-storage';
 
 import {
   Container,
@@ -32,9 +34,41 @@ export interface Teacher {
 
 type TeacherItemProps = {
   teacher: Teacher;
+  isFavorite: boolean;
 };
 
-const TeacherItem: React.FC<TeacherItemProps> = ({ teacher }) => {
+const TeacherItem: React.FC<TeacherItemProps> = ({ teacher, isFavorite }) => {
+  const [isFavorited, setIsFavorited] = useState(isFavorite);
+
+  const handleLinkToWhatsapp = useCallback(() => {
+    Linking.openURL(`whatsapp://send?phone=${teacher.whatsapp}`);
+  }, [teacher.whatsapp]);
+
+  const handleToggleFavorite = useCallback(async () => {
+    const favorites = await AsyncStorage.getItem('favorites');
+
+    let favoritesArray: Teacher[] = [];
+
+    if (favorites) {
+      favoritesArray = JSON.parse(favorites);
+    }
+
+    if (isFavorited) {
+      const favoriteIndex = favoritesArray.findIndex(teacherItem => {
+        return teacherItem.id === teacher.id;
+      });
+
+      favoritesArray.splice(favoriteIndex, 1);
+      setIsFavorited(false);
+    } else {
+      favoritesArray.push(teacher);
+
+      setIsFavorited(true);
+    }
+
+    await AsyncStorage.setItem('favorites', JSON.stringify(favoritesArray));
+  }, [isFavorited, teacher]);
+
   return (
     <Container>
       <Profile>
@@ -55,11 +89,14 @@ const TeacherItem: React.FC<TeacherItemProps> = ({ teacher }) => {
         </Price>
 
         <ButtonsContainer>
-          <FavoriteButton isFavorite>
-            {1 > 0 ? <UnfavoriteIcon /> : <HeartOutlineIcon />}
+          <FavoriteButton
+            onPress={handleToggleFavorite}
+            isFavorite={isFavorited}
+          >
+            {isFavorited ? <UnfavoriteIcon /> : <HeartOutlineIcon />}
           </FavoriteButton>
 
-          <ContactButton>
+          <ContactButton onPress={handleLinkToWhatsapp}>
             <WhatsappIcon />
             <ContactButtonText>Entrar em contato</ContactButtonText>
           </ContactButton>
