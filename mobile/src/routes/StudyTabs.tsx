@@ -41,6 +41,7 @@ const StudyTabs: React.FC = () => {
         name="TeacherList"
         component={TeacherList}
         options={{
+          unmountOnBlur: true,
           tabBarLabel: 'Proffys',
           tabBarIcon: ({ color, size, focused }) => (
             <Ionicons
